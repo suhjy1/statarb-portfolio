@@ -165,6 +165,8 @@ I wrote C++20 versions of batch OU fitting and the backtest loop, and exposed th
 
 Exhibit A: Each figure is the best of three runs on synthetic data ([raw timings](benchmarks.csv)). These are kernel timings, not end-to-end speedups.
 
+The Python baseline in this table is a loop of small library calls, so the ratios mostly measure Python call overhead. Against a fair baseline the picture is different. In a separate benchmark on a different machine (same 1,500 × 60 workload), a vectorized NumPy OU fit took about 0.52 ms against 0.25 ms for the C++ batch kernel, so C++ is only about 2× faster, and a Numba version (0.17 ms) is faster than the C++ one. Once pandas conversion is included, the C++ call is slower than the NumPy one. For the OU fit, the lesson is to batch the work, not to rewrite it in C++. The case for compiled code is stronger in the backtest, where each day depends on the previous one.
+
 → [`cpp/`](../cpp/), [`native/`](../src/statarb/native/)
 
 ---
@@ -214,7 +216,7 @@ The seeds were also unstable. Under a 200-update training budget, LSTM seed nets
 
 ### 8.3 Robustness Checks
 
-To test out-of-domain history, I ran the same engine on the French 49-industry portfolios over a held-out 1980–1999 period. These portfolios are built from CRSP, so they do not share the stock-list survivorship bias. It earned −0.89%/yr gross (HAC t = −3.5). The audit also found a problem in the development period. The Software industry's return is missing on 1971-03-11, the one day the strategy held it, and the engine treats a missing return while held as zero. That is a silent repair, and my registered rule said it makes the inference invalid. So I report the development period as descriptive only, rather than patching it and re-running.
+To test out-of-domain history, I ran the same engine on the French 49-industry portfolios over a held-out 1980–1999 period. These portfolios are built from CRSP, so they do not share the stock-list survivorship bias. It earned −0.89%/yr gross (HAC t = −3.5). Industry returns tend to continue rather than reverse (Moskowitz and Grinblatt, 1999), so this is an industry-level check rather than a survivorship-free test of the stock signal. The 2% cap per position was kept from the stock study, so with only 49 baskets average gross exposure was 0.26, the equivalent of about 13 baskets at the cap; I did not rescale it after seeing the result, and scaling would not change the sign or t-statistic of the gross return. The audit also found a problem in the development period. The Software industry's return is missing on 1971-03-11, the one day the strategy held it, and the engine treats a missing return while held as zero. That is a silent repair, and my registered rule said it makes the inference invalid. So I report the development period as descriptive only, rather than patching it and re-running.
 
 To test cost sensitivity, I re-priced the saved trades with OHLC spread proxies (Abdi–Ranaldo, Corwin–Schultz) instead of a constant 5 bp. Under those proxies the Transformer book came out between −9.7% and −14.2%/yr. The results hinge on execution-cost assumptions that daily data cannot pin down.
 
