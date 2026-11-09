@@ -1,0 +1,22 @@
+# market data and run outputs never get committed
+/data/
+/reports/
+*.parquet
+*.pt
+
+# Python and native build products
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+/build/
+*.so
+*.pyd
+
+# editor and OS metadata
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

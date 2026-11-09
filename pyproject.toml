@@ -1,0 +1,45 @@
+[project]
+name = "statarb"
+version = "0.1.0"
+description = "Residual mean-reversion statistical arbitrage: models, portfolio construction and evaluation"
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.12"
+dependencies = [
+    "cvxpy>=1.6",
+    "numpy>=2.0",
+    "pandas>=2.2",
+    "pydantic>=2.8",
+]
+
+[project.optional-dependencies]
+neural = ["torch>=2.5"]
+dev = ["pytest>=8.3", "ruff>=0.8", "pybind11>=2.13", "statsmodels>=0.14"]
+
+[build-system]
+requires = ["hatchling>=1.25"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/statarb"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "SIM", "NPY", "PD", "RUF"]
+ignore = [
+    "PD010", # keep pivot() since pivot_table() silently aggregates duplicate keys
+    "PD013", # stack() is fine for wide -> long
+]
+
+[tool.ruff.lint.isort]
+known-first-party = ["statarb", "statarb_cpp", "parity", "portfolio_contracts"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+# tests holds shared helpers and build/cpp/python is where the compiled module lands
+pythonpath = ["tests", "build/cpp/python"]
+addopts = ["--import-mode=importlib", "-ra", "--strict-markers"]
