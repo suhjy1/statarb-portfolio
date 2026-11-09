@@ -1,6 +1,8 @@
 # Residual Mean-Reversion Statistical Arbitrage
 
 > **Note:** This is a condensed version of a larger private research codebase, trimmed to the pieces that show the modeling and how I evaluated it. Some write-ups refer to files that are not included here. Feel free to reach out if you have questions or want more details.
+>
+> The project write-up and four blog posts on it are at [suhjy1.github.io/projects/stat-arb/](https://suhjy1.github.io/projects/stat-arb/).
 
 This repository contains a market-neutral equity strategy that I built end to end, from the residual model through portfolio construction, execution, and evaluation. The idea is simple. I strip out each stock's factor exposure, model what is left over as an Ornstein–Uhlenbeck (OU) process, and trade its deviations from the mean. Most of my effort went into making the evaluation honest, so that the results reflect what the strategy would actually have done and not what a backtest made it look like.
 
